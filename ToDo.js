@@ -15,18 +15,49 @@ export default class ToDo extends React.Component {
     isCompleted: false,
   };
   render() {
-    const { isCompleted } = this.state;
+    const { isCompleted, isEditing } = this.state;
     return (
       <View style={styles.container}>
-        <TouchableOpacity onPress={this._toggleComplete}>
-          <View
+        <View style={styles.column}>
+          <TouchableOpacity onPress={this._toggleComplete}>
+            <View
+              style={[
+                styles.circle,
+                isCompleted ? styles.completedCircle : styles.uncompetedCircle,
+              ]}
+            />
+          </TouchableOpacity>
+          <Text
             style={[
-              styles.circle,
-              isCompleted ? styles.completedCircle : styles.uncompetedCircle,
+              styles.text,
+              isCompleted ? styles.completeText : styles.uncompetedText,
             ]}
-          />
-        </TouchableOpacity>
-        <Text style={styles.text}>Hello I'm a To Do</Text>
+          >
+            Hello I'm a To Do
+          </Text>
+        </View>
+        {isEditing ? (
+          <View style={styles.actions}>
+            <TouchableOpacity onPressOut={this._finishEditing}>
+              <View style={styles.actionContainer}>
+                <Text style={styles.actionText}>✅</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.actions}>
+            <TouchableOpacity onPressOut={this._startEditing}>
+              <View style={styles.actionContainer}>
+                <Text style={styles.actionText}>✏</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={styles.actionContainer}>
+                <Text style={styles.actionText}>❌</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }
@@ -35,6 +66,16 @@ export default class ToDo extends React.Component {
       return {
         isCompleted: !prevState.isCompleted,
       };
+    });
+  };
+  _startEditing = () => {
+    this.setState({
+      isEditing: true,
+    });
+  };
+  _finishEditing = () => {
+    this.setState({
+      isEditing: false,
     });
   };
 }
@@ -46,6 +87,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   circle: {
     width: 30,
@@ -65,5 +107,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 20,
   },
+  completeText: {
+    color: "#bbb",
+    textDecorationLine: "line-through",
+  },
+  uncompleteText: {
+    color: "#353535",
+  },
   radio: {},
+  column: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: width / 2,
+  },
+  actions: {
+    flexDirection: "row",
+  },
+  actionContainer: {
+    marginVertical: 10,
+    marginHorizontal: 10,
+  },
 });
