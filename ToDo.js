@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  TextInput,
 } from "react-native";
 
 const { width, height } = Dimensions.get("window");
@@ -13,9 +14,11 @@ export default class ToDo extends React.Component {
   state = {
     isEditing: false,
     isCompleted: false,
+    toDoValue: "",
   };
   render() {
-    const { isCompleted, isEditing } = this.state;
+    const { isCompleted, isEditing, toDoValue } = this.state;
+    const { text } = this.props;
     return (
       <View style={styles.container}>
         <View style={styles.column}>
@@ -27,14 +30,29 @@ export default class ToDo extends React.Component {
               ]}
             />
           </TouchableOpacity>
-          <Text
-            style={[
-              styles.text,
-              isCompleted ? styles.completeText : styles.uncompetedText,
-            ]}
-          >
-            Hello I'm a To Do
-          </Text>
+          {isEditing ? (
+            <TextInput
+              style={[
+                styles.text,
+                styles.input,
+                isCompleted ? styles.completeText : styles.uncompetedText,
+              ]}
+              value={toDoValue}
+              multiline={true}
+              onChangeText={this._controlInput}
+              returnKeyType={"done"}
+              onBlur={this._finishEditing}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.text,
+                isCompleted ? styles.completeText : styles.uncompetedText,
+              ]}
+            >
+              {text}
+            </Text>
+          )}
         </View>
         {isEditing ? (
           <View style={styles.actions}>
@@ -69,13 +87,20 @@ export default class ToDo extends React.Component {
     });
   };
   _startEditing = () => {
+    const { text } = this.props;
     this.setState({
       isEditing: true,
+      toDoValue: text,
     });
   };
   _finishEditing = () => {
     this.setState({
       isEditing: false,
+    });
+  };
+  _controlInput = (text) => {
+    this.setState({
+      toDoValue: text,
     });
   };
 }
@@ -106,6 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 20,
     marginVertical: 20,
+    width: width / 2,
   },
   completeText: {
     color: "#bbb",
@@ -114,7 +140,6 @@ const styles = StyleSheet.create({
   uncompleteText: {
     color: "#353535",
   },
-  radio: {},
   column: {
     flexDirection: "row",
     alignItems: "center",
@@ -127,5 +152,9 @@ const styles = StyleSheet.create({
   actionContainer: {
     marginVertical: 10,
     marginHorizontal: 10,
+  },
+  input: {
+    marginVertical: 15,
+    paddingBottom: 5,
   },
 });
