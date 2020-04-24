@@ -27,6 +27,7 @@ export default class ToDo extends React.Component {
     id: PropTypes.string.isRequired,
     uncompleteToDo: PropTypes.func.isRequired,
     completeToDo: PropTypes.func.isRequired,
+    updateToDo: PropTypes.func.isRequired,
   };
   render() {
     const { isEditing, toDoValue } = this.state;
@@ -105,6 +106,9 @@ export default class ToDo extends React.Component {
     });
   };
   _finishEditing = () => {
+    const { toDoValue } = this.state;
+    const { id, updateToDo } = this.props;
+    updateToDo(id, toDoValue);
     this.setState({
       isEditing: false,
     });
