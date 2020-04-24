@@ -11,6 +11,45 @@ import {
 } from "react-native";
 import { AppLoading } from "expo";
 import ToDo from "./ToDo";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+
+const seed = () => {
+  const one = Math.floor((Math.random() * 100) / 3.92);
+  const two = Math.floor((Math.random() * 100) / 3.92);
+  const three = Math.floor((Math.random() * 100) / 3.92);
+  const four = Math.floor((Math.random() * 100) / 3.92);
+  const five = Math.floor((Math.random() * 100) / 3.92);
+  const six = Math.floor((Math.random() * 100) / 3.92);
+  const seven = Math.floor((Math.random() * 100) / 3.92);
+  const eight = Math.floor((Math.random() * 100) / 3.92);
+  const nine = Math.floor((Math.random() * 100) / 3.92);
+  const ten = Math.floor((Math.random() * 100) / 3.92);
+  const eleven = Math.floor((Math.random() * 100) / 3.92);
+  const twelve = Math.floor((Math.random() * 100) / 3.92);
+  const thirteen = Math.floor((Math.random() * 100) / 3.92);
+  const fourteen = Math.floor((Math.random() * 100) / 3.92);
+  const fifteen = Math.floor((Math.random() * 100) / 3.92);
+  const sixteen = Math.floor((Math.random() * 100) / 3.92);
+  return [
+    one,
+    two,
+    three,
+    four,
+    five,
+    six,
+    seven,
+    eight,
+    nine,
+    ten,
+    eleven,
+    twelve,
+    thirteen,
+    fourteen,
+    fifteen,
+    sixteen,
+  ];
+};
 
 const { height, width } = Dimensions.get("window");
 
@@ -18,12 +57,13 @@ export default class App extends React.Component {
   state = {
     newToDo: "",
     loadedToDos: false,
+    toDos: {},
   };
   componentDidMount = () => {
     this._loadToDos();
   };
   render() {
-    const { newToDo, loadedToDos } = this.state;
+    const { newToDo, loadedToDos, toDos } = this.state;
     if (!loadedToDos) {
       return <AppLoading />;
     }
@@ -36,13 +76,16 @@ export default class App extends React.Component {
             style={styles.input}
             placeholder={"New To Do"}
             value={newToDo}
-            onChangeText={this._controlNewToDo}
+            onChangeText={this._controlNewTodo}
             placeholderTextColor={"#999"}
             returnKeyType={"done"}
             autoCorrect={false} //자동수정 방지
+            onSubmitEditing={this._addToDo}
           />
           <ScrollView contentContainerStyle={styles.toDos}>
-            <ToDo text={"Hello I'm a To Do"} />
+            {Object.values(toDos).map((toDo) => (
+              <ToDo key={toDo.id} {...toDo} deleteToDo={this._deleteToDo} />
+            ))}
           </ScrollView>
         </View>
       </View>
@@ -53,7 +96,47 @@ export default class App extends React.Component {
       newToDo: text,
     });
   };
-  _loadToDos = () => {};
+  _loadToDos = () => {
+    this.setState({
+      loadedToDos: true,
+    });
+  };
+  _addToDo = () => {
+    const { newToDo } = this.state;
+    if (newToDo !== "") {
+      this.setState((prevState) => {
+        const ID = uuidv4({ random: seed() });
+        const newToDoObject = {
+          [ID]: {
+            id: ID,
+            isCompleted: false,
+            text: newToDo,
+            createdAt: Date.now(),
+          },
+        };
+        const newState = {
+          ...prevState,
+          newToDo: "",
+          toDos: {
+            ...prevState.toDos,
+            ...newToDoObject,
+          },
+        };
+        return { ...newState };
+      });
+    }
+  };
+  _deleteToDo = (id) => {
+    this.setState((prevState) => {
+      const toDos = prevState.toDos;
+      delete toDos[id];
+      const newState = {
+        ...prevState,
+        ...toDos,
+      };
+      return { ...newState };
+    });
+  };
 }
 
 const styles = StyleSheet.create({
